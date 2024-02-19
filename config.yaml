@@ -1,0 +1,266 @@
+meta:
+  engine: 4.0.5
+  version: 0.1
+  author: snikimonkd
+units:
+  # Proxy Spacing Variables
+  kx: cx
+  ky: cy
+  # Padding Variables
+  px: kx + 4
+  py: ky + 4
+  # Double Padding Variables
+  dpx: kx + 8
+  dpy: ky + 8
+  stand_size: 2
+points:
+  zones:
+    matrix:
+      anchor:
+        shift: [50, -100]
+      key:
+        padding: 1ky
+        spread: 1kx
+      rows:
+        bottom:
+          row_net: P4
+        home:
+          row_net: P3
+        top:
+          row_net: P2
+      columns:
+        far_outer:
+          key:
+            column_net: P19
+          rows:
+            bottom:
+              skip: true
+            home:
+              skip: true
+            top:
+        outer:
+          key:
+            stagger: 8
+            column_net: P20
+        pinky:
+          key:
+            column_net: P21
+        ring:
+          key:
+            column_net: P6
+            splay: -5
+            origin: [-12, -10]
+            stagger: 12
+        middle:
+          key:
+            column_net: P7
+            stagger: 5
+        index:
+          key:
+            column_net: P8
+            stagger: -6
+        inner:
+          key:
+            column_net: P9
+            stagger: -2
+    thumbfan:
+      anchor:
+        ref: matrix_inner_bottom
+        shift: [-36, -18]
+      columns:
+        near:
+          key:
+            column_net: P6
+        home:
+          key:
+            column_net: P7
+            spread: 19.5
+            splay: -12
+            origin: [-11.75, -9]
+        one_more:
+          key:
+            column_net: P8
+            spread: 19.5
+            splay: -12
+            origin: [-11.75, -9]
+        far:
+          key:
+            column_net: P9
+            spread: 19.5
+            splay: -12
+            origin: [-9.5, -9]
+      rows:
+        thumb:
+          row_net: P5
+  rotate: 5
+outlines:
+  keys:
+    - what: rectangle
+      where: true
+      size: [kx-0.5,ky-0.5]
+  board:
+    - what: polygon
+      operation: stack
+      points:
+        - ref: matrix_middle_top
+          shift: [-0.5px,0.5py]
+        - ref: matrix_middle_top
+          shift: [0.5px,0.5py]
+        - ref: matrix_inner_top
+          shift: [0.5px,0.5py]
+        - ref: matrix_inner_home
+          shift: [0.5px,0.3py]
+        - ref: matrix_inner_home
+          shift: [1.5px,0.3py]
+        - ref: thumbfan_far_thumb
+          shift: [0.5px,0.5py]
+        - ref: thumbfan_far_thumb
+          shift: [0.5px,-0.5py]
+        - ref: matrix_outer_bottom
+          shift: [-0.5px,-0.5py]
+        - ref: matrix_far_outer_top
+          shift: [-0.5px,-0.5py]
+        - ref: matrix_far_outer_top
+          shift: [-0.5px,0.5py]
+        - ref: matrix_outer_top
+          shift: [-0.5px,0.5py]
+      fillet: 5
+  mounting:
+    - what: circle
+      radius: stand_size
+      where:
+        ref: [matrix_far_outer_top]
+        shift: [0.2px,0.6py]
+    - what: circle
+      radius: stand_size
+      where:
+        ref: [matrix_outer_bottom]
+        shift: [-0.75cx,0]
+    - what: circle
+      radius: stand_size
+      where:
+        ref: [matrix_index_top]
+        shift: [-0.2px,0.6py]
+    - what: circle
+      radius: stand_size
+      where:
+        ref: [matrix_middle_home]
+        shift: [-0.5cx,-0.5cy]
+    - what: circle
+      radius: stand_size
+      where:
+        ref: [thumbfan_near_thumb]
+        shift: [-0.75cx,0]
+    - what: circle
+      radius: stand_size
+      where:
+          ref: [thumbfan_far_thumb]
+          shift: [-0.25cx,-0.75cy]
+    - what: circle
+      radius: stand_size
+      where:
+        ref: [matrix_inner_top]
+        shift: [0.5cx,-0.5cy]
+  combo:
+    - name: board
+    - operation: subtract
+      name: keys
+  case:
+    - name: board
+    - operation: subtract
+      name: mounting
+pcbs:
+  board:
+    outlines:
+      main:
+        outline: board
+    footprints:
+      choc_hotswap:
+        what: choc
+        where: true
+        params:
+          keycaps: true
+          reverse: true
+          hotswap: true
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+
+      diode:
+        what: diode
+        where: true
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [0, -5]
+
+      mcu_l:
+        what: ceoloide/nice_nano
+        params:
+          include_traces: true
+          show_instructions: false
+          show_silk_labels: true
+          show_via_labels: true
+          use_rectangular_jumpers: true
+        where:
+          ref: matrix_inner_bottom
+          shift: [20, 5]
+
+      reset_l:
+        what: reset_button
+        params:
+          from: GND
+          to: RST
+        where:
+          ref: thumbfan_far_thumb
+          shift: [0, 0.75py]
+          rotate: 0
+
+      trrs_l:
+        what: ceoloide/trrs_pj320a
+        where:
+          ref: matrix_inner_bottom
+          shift: [35, -18]
+          rotate: -85
+        params:
+          A: P0
+          C: GND
+          D: VCC
+          reversible: true
+          symmetric: true
+
+      hole_top_left:
+        what: MvEerd_mountinghole
+        where:
+          ref: [matrix_far_outer_top]
+          shift: [0.2px,0.6py]
+      hole_left:
+        what: MvEerd_mountinghole
+        where:
+          ref: [matrix_outer_bottom]
+          shift: [-0.75cx,0]
+      hole_top_middle:
+        what: MvEerd_mountinghole
+        where:
+          ref: [matrix_index_top]
+          shift: [-0.2px,0.6py]
+      hole_center:
+        what: MvEerd_mountinghole
+        where:
+          ref: [matrix_middle_home]
+          shift: [-0.5cx,-0.5cy]
+      hole_bottom:
+        what: MvEerd_mountinghole
+        where:
+          ref: [thumbfan_near_thumb]
+          shift: [-0.75cx,0]
+      hole_bottom_right:
+        what: MvEerd_mountinghole
+        where:
+          ref: [thumbfan_far_thumb]
+          shift: [-0.25cx,-0.75cy]
+      hole_top_right:
+        what: MvEerd_mountinghole
+        where:
+          ref: [matrix_inner_top]
+          shift: [0.5cx,-0.5cy]
