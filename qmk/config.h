@@ -3,7 +3,7 @@
 
 #pragma once
 
-#define MASTER_LEFT
+#define SPLIT_USB_DETECT
 // #define MATRIX_COLS 7
 // #define MATRIX_ROWS 8
 
