@@ -4,8 +4,11 @@
 #pragma once
 
 #define SPLIT_USB_DETECT
-// #define MATRIX_COLS 7
-// #define MATRIX_ROWS 8
+
+#define TAPPING_TERM 200
+#define QUICK_TAP_TERM 0
+// #define HOLD_ON_OTHER_KEY_PRESS
+// #define PERMISSIVE_HOLD
 
 /*
  * Feature disable options
