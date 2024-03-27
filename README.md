@@ -1,5 +1,31 @@
 # JCUKEN
 
+Cyrillic-friendly low profile ortholinear split keyboard.
+
+## Tools
+
+Designed with [ergogen](https://github.com/ergogen/ergogen).
+
+Routed with [KiCad](https://www.kicad.org/).
+
+### Top view
+
+![top_view.jpg](./img/top_view.jpg)
+
+### Close up view
+
+![close.jpg](./img/close.jpg)
+
+### High stands
+
+![stands_high.jpg](./img/stands_high.jpg)
+
+### Low stands
+
+![stands_low.jpg](./img/stands_low.jpg)
+
+## Materials
+
 | Part                      | Link                                                                        | Price                     |
 | ------------------------- | --------------------------------------------------------------------------- | ------------------------- |
 | PCB (5 pcs)               | [link](https://aliexpress.ru/store/1100324072?g=y&page=1&searchInfo=search) | 25$                       |
@@ -12,4 +38,6 @@
 | Hot swap sockets (70 pcs) | [link](https://aliexpress.ru/item/1005006007846154.html)                    | 10$                       |
 | Keycaps (50pcs)           | [link](https://aliexpress.ru/item/1005004558099208.html)                    | 22$                       |
 | Case                      | [link](https://github.com/Snikimonkd/JCUKEN/tree/main/case)                 | 2$ (3 beers for my buddy) |
+| Bolts/Stands (10 pcs)     | Local hardware store                                                        | 1$                        |
+| **Total**                 |                                                                             | **~97$**                  |
 
