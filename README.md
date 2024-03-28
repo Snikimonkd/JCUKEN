@@ -41,9 +41,3 @@ Routed with [KiCad](https://www.kicad.org/).
 | Bolts/Stands (10 pcs)     | Local hardware store                                                        | 1$                        |
 | **Total**                 |                                                                             | **~97$**                  |
 
-
-
-Just finished my first build. Thx to @ceoloide and @hand_le for helping with pcb and @flatfootfox for the article.
-It was lots of fun, especially soldering (for the first time in my life) the diods.
-Definitely gonna make v2 with some fixes in design, cause i already have some ideas on how to improve the keyboard.
-All sources can be found here: https://github.com/Snikimonkd/JCUKEN.
