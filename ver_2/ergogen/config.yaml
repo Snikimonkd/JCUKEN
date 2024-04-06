@@ -106,13 +106,13 @@ outlines:
       where:
         ref: [matrix_outer_bottom]
         shift: [-0.5px,-0.5py-315]
-  circle_for_arc:
+  circle_for_top_arc:
     - what: circle
       radius: 130
       where:
         ref: [matrix_middle_bottom]
         shift: [-0.5,-86.3]
-  useless_part_of_circle:
+  useless_part_of_circle_for_top_arc:
     - what: polygon
       operation: stack
       points:
@@ -129,9 +129,9 @@ outlines:
         - ref: matrix_outer_top
           shift: [-200,-300]
   top_arc:
-    - name: circle_for_arc
+    - name: circle_for_top_arc
     - operation: subtract
-      name: useless_part_of_circle
+      name: useless_part_of_circle_for_top_arc
   board:
     - name: board_bottom
     - operation: add
