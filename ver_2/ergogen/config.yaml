@@ -7,12 +7,8 @@ units:
   kx: cx
   ky: cy
   # Padding Variables
-  px: kx + 4
-  py: ky + 4
-  # Double Padding Variables
-  dpx: kx + 8
-  dpy: ky + 8
-  stand_size: 2
+  px: kx + 2
+  py: ky + 2
 points:
   zones:
     matrix:
@@ -55,15 +51,19 @@ points:
     thumbfan:
       anchor:
         ref: matrix_inner_bottom
-        shift: [-0.5kx, -kx-2]
+        shift: [-0.5kx+3.5, -kx-2]
       columns:
         near:
           key:
             column_net: P6
+            shift: [2, -1.5]
+            splay: -18
         home:
           key:
             column_net: P7
-            shift: [0, -5]
+            shift: [2, -2]
+            splay: -4
+            spread: 19.5
       rows:
         thumb:
           row_net: P5
@@ -78,9 +78,9 @@ outlines:
       operation: stack
       points:
         - ref: matrix_middle_top
-          shift: [-0.5px,0.5py]
+          shift: [-0.5px,0.5cy]
         - ref: matrix_middle_top
-          shift: [0.5px,0.5py]
+          shift: [0.5px,0.5cy-2]
         - ref: matrix_inner_top
           shift: [0.5px,0.5py]
         - ref: matrix_inner_home
@@ -88,20 +88,30 @@ outlines:
         - ref: matrix_inner_home
           shift: [0.5px+20,0.5py]
         - ref: matrix_inner_bottom
-          shift: [0.5px+20,-0.5py]
+          shift: [0.5px+20,-0.5py-6]
         - ref: thumbfan_home_thumb
-          shift: [0.5px,-0.6py]
+          shift: [0.5px,-0.5py]
+        - ref: thumbfan_home_thumb
+          shift: [-0.5px,-0.7py]
+        - ref: matrix_outer_bottom
+          shift: [0.5px,-0.7py]
         - ref: matrix_outer_bottom
           shift: [-0.5px,-0.5py]
         - ref: matrix_outer_top
           shift: [-0.5px,0.5py]
       fillet: 2
+  circle_for_bottom_arc:
+    - what: circle
+      radius: 315
+      where:
+        ref: [matrix_outer_bottom]
+        shift: [-0.5px,-0.5py-315]
   circle_for_arc:
     - what: circle
       radius: 130
       where:
         ref: [matrix_middle_bottom]
-        shift: [-0.60,-84.75]
+        shift: [-0.5,-86.3]
   useless_part_of_circle:
     - what: polygon
       operation: stack
@@ -126,6 +136,8 @@ outlines:
     - name: board_bottom
     - operation: add
       name: top_arc
+    - operation: subtract
+      name: circle_for_bottom_arc
   combo:
     - name: board
     - operation: subtract
@@ -166,3 +178,26 @@ pcbs:
         where:
           ref: matrix_inner_bottom
           shift: [20, 0.5py]
+
+      trrs:
+        what: ceoloide/trrs_pj320a
+        where:
+          ref: matrix_inner_bottom
+          shift: [27, -14]
+          rotate: -90
+        params:
+          A: P0
+          C: GND
+          D: VCC
+          reversible: true
+          symmetric: true
+
+      reset_l:
+        what: reset_button
+        params:
+          from: GND
+          to: RST
+        where:
+          ref: matrix_inner_bottom
+          shift: [23, -18]
+          rotate: 0
