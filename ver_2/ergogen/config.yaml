@@ -51,7 +51,7 @@ points:
     thumbfan:
       anchor:
         ref: matrix_inner_bottom
-        shift: [-0.5kx+3.5, -kx-2]
+        shift: [-10, -kx]
       columns:
         near:
           key:
@@ -128,10 +128,10 @@ outlines:
           shift: [-200,-300]
   circle_for_right_arc:
     - what: circle
-      radius: 112
+      radius: 78
       where:
         ref: [matrix_inner_home]
-        shift: [0.5px+20-112+0.9,-0.5cy]
+        shift: [0.5px+20-78+1.1,-0.5cy+0.5]
   useless_part_of_circle_for_right_arc:
     - what: polygon
       operation: stack
@@ -225,5 +225,5 @@ pcbs:
           to: RST
         where:
           ref: matrix_inner_bottom
-          shift: [23, -18]
+          shift: [21, -18]
           rotate: 0
