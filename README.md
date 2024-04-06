@@ -8,21 +8,23 @@ Designed with [ergogen](https://github.com/ergogen/ergogen).
 
 Routed with [KiCad](https://www.kicad.org/).
 
+## Version 1
+
 ### Top view
 
-![top_view.jpg](./img/top_view.jpg)
+![top_view.jpg](./ver_1/img/top_view.jpg)
 
 ### Close up view
 
-![close.jpg](./img/close.jpg)
+![close.jpg](./ver_1/img/close.jpg)
 
 ### High stands
 
-![stands_high.jpg](./img/stands_high.jpg)
+![stands_high.jpg](./ver_1/img/stands_high.jpg)
 
 ### Low stands
 
-![stands_low.jpg](./img/stands_low.jpg)
+![stands_low.jpg](./ver_1/img/stands_low.jpg)
 
 ## Materials
 
