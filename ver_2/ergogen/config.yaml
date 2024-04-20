@@ -197,10 +197,10 @@ outlines:
     - name: body_stairs
     - operation: add
       name: right_arc
-      fillet: 1
+      fillet: 1.25
     - operation: intersect
       name: circle_top
-      fillet: 10
+      fillet: 4
     - operation: stack
       name: keys
 
@@ -238,13 +238,13 @@ pcbs:
           use_rectangular_jumpers: true
         where:
           ref: matrix_inner_bottom
-          shift: [20, 0.5py]
+          shift: [20, 0.5py+9]
 
       trrs:
         what: ceoloide/trrs_pj320a
         where:
           ref: matrix_inner_bottom
-          shift: [27, -14]
+          shift: [27, -5]
           rotate: -90
         params:
           A: P0
@@ -260,5 +260,5 @@ pcbs:
           to: RST
         where:
           ref: matrix_inner_bottom
-          shift: [21, -18]
+          shift: [21, -10]
           rotate: 0
