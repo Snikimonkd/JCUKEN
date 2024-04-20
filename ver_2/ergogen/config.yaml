@@ -1,229 +1,264 @@
-meta:
-  engine: 4.0.2
-  version: 0.1
-  author: snikimonkd
-units:
-  # Proxy Spacing Variables
-  kx: cx
-  ky: cy
-  # Padding Variables
-  px: kx + 2
-  py: ky + 2
-points:
-  zones:
-    matrix:
-      anchor:
-        shift: [50, -100]
-      key:
-        padding: 1ky
-        spread: 1kx
-      rows:
-        bottom:
-          row_net: P4
-        home:
-          row_net: P3
-        top:
-          row_net: P2
-      columns:
-        outer:
-          key:
-            column_net: P20
-        pinky:
-          key:
-            column_net: P21
-            stagger: 6
-        ring:
-          key:
-            origin: [-12, -10]
-            stagger: 6
-        middle:
-          key:
-            column_net: P7
-            stagger: 4
-        index:
-          key:
-            column_net: P8
-            stagger: -6
-        inner:
-          key:
-            column_net: P9
-            stagger: -2
-    thumbfan:
-      anchor:
-        ref: matrix_inner_bottom
-        shift: [-10, -kx]
-      columns:
-        near:
-          key:
-            column_net: P6
-            shift: [1.5, -2.5]
-            splay: -16
-        home:
-          key:
-            column_net: P7
-            shift: [1.5, -3]
-            splay: -4
-            spread: 19.5
-      rows:
-        thumb:
-          row_net: P5
-  rotate: 0
-outlines:
-  keys:
-    - what: rectangle
-      where: true
-      size: [kx-0.5,ky-0.5]
-  board_bottom:
-    - what: polygon
-      operation: stack
-      points:
-        - ref: matrix_middle_top
-          shift: [-0.5px,0.5cy]
-        - ref: matrix_middle_top
-          shift: [0.5px,0.5cy-2]
-        - ref: matrix_inner_top
-          shift: [0.5px,0.5py]
-        - ref: matrix_inner_home
-          shift: [0.5px,0.5py]
-        - ref: matrix_inner_home
-          shift: [0.5px+20,0.5py]
-        - ref: thumbfan_home_thumb
-          shift: [0.5px,-0.5py]
-        - ref: thumbfan_home_thumb
-          shift: [-0.5px,-0.7py]
-        - ref: matrix_outer_bottom
-          shift: [0.5px,-0.7py]
-        - ref: matrix_outer_bottom
-          shift: [-0.5px,-0.5py]
-        - ref: matrix_outer_top
-          shift: [-0.5px,0.5py]
-      fillet: 2
-  circle_for_bottom_arc:
-    - what: circle
-      radius: 315
-      where:
-        ref: [matrix_outer_bottom]
-        shift: [-0.5px,-0.5py-315]
-  circle_for_top_arc:
-    - what: circle
-      radius: 130
-      where:
-        ref: [matrix_middle_bottom]
-        shift: [-0.5,-86.3]
-  useless_part_of_circle_for_top_arc:
-    - what: polygon
-      operation: stack
-      points:
-        - ref: matrix_outer_top
-          shift: [-200,-30]
-        - ref: matrix_outer_top
-          shift: [-0.5px,0.5py]
-        - ref: matrix_inner_top
-          shift: [0.5px,0.5py]
-        - ref: matrix_inner_top
-          shift: [200,0]
-        - ref: matrix_inner_top
-          shift: [200,-300]
-        - ref: matrix_outer_top
-          shift: [-200,-300]
-  circle_for_right_arc:
-    - what: circle
-      radius: 78
-      where:
-        ref: [matrix_inner_home]
-        shift: [0.5px+20-78+1.1,-0.5cy+0.5]
-  useless_part_of_circle_for_right_arc:
-    - what: polygon
-      operation: stack
-      points:
-        - ref: matrix_inner_home
-          shift: [0.5px+20,0.5py]
-        - ref: thumbfan_home_thumb
-          shift: [0.5px,-0.5py]
-        - ref: thumbfan_home_thumb
-          shift: [0.5px+100,-0.5py-300]
-        - ref: matrix_inner_top
-          shift: [-600,-300]
-        - ref: matrix_inner_top
-          shift: [-600,300]
-        - ref: matrix_inner_home
-          shift: [0.5px+300,0.5py+300]
-  right_arc:
-    - name: circle_for_right_arc
-    - operation: subtract
-      name: useless_part_of_circle_for_right_arc
-  top_arc:
-    - name: circle_for_top_arc
-    - operation: subtract
-      name: useless_part_of_circle_for_top_arc
-  board:
-    - name: board_bottom
-    - operation: add
-      name: top_arc
-    - operation: add
-      name: right_arc
-    - operation: subtract
-      name: circle_for_bottom_arc
-  combo:
-    - name: board
-    - operation: subtract
-      name: keys
-pcbs:
-  jcuken_v2:
-    outlines:
-      main:
-        outline: board
-    footprints:
-      choc_hotswap:
-        what: choc
-        where: true
-        params:
-          keycaps: true
-          reverse: true
-          hotswap: true
-          from: "{{column_net}}"
-          to: "{{colrow}}"
-
-      diode:
-        what: diode
-        where: true
-        params:
-          from: "{{colrow}}"
-          to: "{{row_net}}"
-        adjust:
-          shift: [0, -5]
-
-      mcu:
-        what: ceoloide/nice_nano
-        params:
-          include_traces: true
-          show_instructions: false
-          show_silk_labels: true
-          show_via_labels: true
-          use_rectangular_jumpers: true
-        where:
-          ref: matrix_inner_bottom
-          shift: [20, 0.5py]
-
-      trrs:
-        what: ceoloide/trrs_pj320a
-        where:
-          ref: matrix_inner_bottom
-          shift: [27, -14]
-          rotate: -90
-        params:
-          A: P0
-          C: GND
-          D: VCC
-          reversible: true
-          symmetric: true
-
-      reset_l:
-        what: reset_button
-        params:
-          from: GND
-          to: RST
-        where:
-          ref: matrix_inner_bottom
-          shift: [21, -18]
-          rotate: 0
+meta:
+  engine: 4.0.2
+  version: 0.1
+  author: snikimonkd
+units:
+  # Proxy Spacing Variables
+  kx: 18
+  ky: 18
+  # Padding Variables
+  px: kx + 2
+  py: ky + 2
+  # arc
+  top_radius: 140
+  right_radius: 50
+  # MCU size
+  mcu_width: 18
+  mcu_height: 34
+points:
+  zones:
+    matrix:
+      anchor:
+        shift: [50, -100]
+      key:
+        padding: 1ky
+        spread: 1kx
+      rows:
+        bottom:
+          row_net: P4
+        home:
+          row_net: P3
+        top:
+          row_net: P2
+      columns:
+        outer:
+          key:
+            column_net: P20
+        pinky:
+          key:
+            column_net: P21
+            stagger: 3
+        ring:
+          key:
+            origin: [-12, -10]
+            stagger: 6
+        middle:
+          key:
+            column_net: P7
+            stagger: 4
+        index:
+          key:
+            column_net: P8
+            stagger: -6
+        inner:
+          key:
+            column_net: P9
+            stagger: -2
+    thumbfan:
+      anchor:
+        ref: matrix_inner_bottom
+        shift: [-5, -ky-3]
+      columns:
+        near:
+          key:
+            column_net: P6
+            shift: [0, 0]
+        home:
+          key:
+            column_net: P7
+            shift: [-1, -3]
+      rows:
+        thumb:
+          row_net: P5
+
+    top_left:
+      anchor:
+        ref: matrix_outer_top
+        shift: [-0.5px, 0.5py]
+    top_right:
+      anchor:
+        - ref: matrix_inner_top
+          shift: [0.5px,0.5py]
+
+    right_top:
+      anchor:
+        - ref: matrix_inner_home
+          shift: [0.5px+mcu_width+2,0.5py-mcu_height-2]
+outlines:
+  keys:
+    - what: rectangle
+      where: [/^matrix_.*/,/^thumbfan.*/]
+      size: [kx-0.5,ky-0.5]
+  mcu:
+    - what: polygon
+      operation: stack
+      points:
+        - ref: matrix_inner_home
+          shift: [0.5px,0.5ky]
+        - ref: matrix_inner_home
+          shift: [0.5px,0.5ky-mcu_height]
+        - ref: matrix_inner_home
+          shift: [0.5px+mcu_width,0.5ky-mcu_height]
+        - ref: matrix_inner_home
+          shift: [0.5px+mcu_width,0.5ky]
+
+  circle_top:
+    - what: circle
+      radius: top_radius
+      where:
+        aggregate:
+          parts:
+            - ref: top_left
+            - ref: top_right
+        orient: top_left
+        shift: [-130,0]
+
+  circle_right:
+    - what: circle
+      radius: right_radius
+      where:
+        - ref: right_top
+          shift: [-right_radius, 0]
+
+  body_stairs:
+    - what: polygon
+      operation: stack
+      points:
+        - ref: thumbfan_home_thumb
+          shift: [0.5px-2,-0.5py]
+        - ref: thumbfan_home_thumb
+          shift: [-0.5px,-0.5py]
+        - ref: thumbfan_near_thumb
+          shift: [0.5px-2,-0.5py]
+        - ref: thumbfan_near_thumb
+          shift: [-0.5px,-0.5py]
+        - ref: thumbfan_near_thumb
+          shift: [-0.5px,0.5py+3]
+        - ref: matrix_index_bottom
+          shift: [-0.5px,-0.5py]
+        - ref: matrix_middle_bottom
+          shift: [0.5px-2,-0.5py]
+        - ref: matrix_middle_bottom
+          shift: [-0.5px+2,-0.5py]
+        - ref: matrix_ring_bottom
+          shift: [0.5px,-0.5py]
+        - ref: matrix_ring_bottom
+          shift: [-0.5px+2,-0.5py]
+        - ref: matrix_pinky_bottom
+          shift: [0.5px,-0.5py]
+        - ref: matrix_pinky_bottom
+          shift: [-0.5px+2,-0.5py]
+        - ref: matrix_outer_bottom
+          shift: [0.5px,-0.5py]
+        - ref: matrix_outer_bottom
+          shift: [-0.5px,-0.5py]
+        - ref: matrix_outer_top
+          shift: [-0.5px,0.5py+15]
+        - ref: matrix_inner_top
+          shift: [0.5px,0.5py+15]
+        - ref: matrix_inner_home
+          shift: [0.5px+mcu_width+2,0.5py+20]
+        - ref: matrix_inner_home
+          shift: [0.5px+mcu_width+2,0.5py-mcu_height-2]
+
+
+  circle_square:
+    - what: polygon
+      operation: stack
+      points:
+        - ref: matrix_inner_home
+          shift: [0.5px,0.5py]
+        - ref: matrix_inner_home
+          shift: [0.5px+mcu_width+2,0.5py-mcu_height-2]
+        - ref: thumbfan_home_thumb
+          shift: [0.5px+20,-0.5py]
+        - ref: thumbfan_home_thumb
+          shift: [-0.5px,-0.5py]
+
+  right_arc:
+    - name: circle_square
+    - operation: intersect
+      name: circle_right
+
+
+  dbg:
+    - name: body_stairs
+    - operation: stack
+      name: circle_top
+    - operation: stack
+      name: circle_right
+    - operation: stack
+      name: keys
+    - operation: stack
+      name: circle_square
+
+
+  body:
+    - name: body_stairs
+    - operation: add
+      name: right_arc
+      fillet: 1
+    - operation: intersect
+      name: circle_top
+      fillet: 10
+    - operation: stack
+      name: keys
+
+pcbs:
+  jcuken_v2:
+    outlines:
+      main:
+        outline: body
+    footprints:
+      choc_hotswap:
+        what: ceoloide/switch_choc_v1_v2
+        where: [/^matrix_.*/,/^thumbfan_.*/]
+        params:
+          reversible: true
+          hotswap: true
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+
+      diode:
+        what: diode
+        where: [/^matrix_.*/,/^thumbfan_.*/]
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [0, -5]
+
+      mcu:
+        what: ceoloide/nice_nano
+        params:
+          include_traces: true
+          show_instructions: false
+          show_silk_labels: true
+          show_via_labels: true
+          use_rectangular_jumpers: true
+        where:
+          ref: matrix_inner_bottom
+          shift: [20, 0.5py]
+
+      trrs:
+        what: ceoloide/trrs_pj320a
+        where:
+          ref: matrix_inner_bottom
+          shift: [27, -14]
+          rotate: -90
+        params:
+          A: P0
+          C: GND
+          D: VCC
+          reversible: true
+          symmetric: true
+
+      reset_l:
+        what: reset_button
+        params:
+          from: GND
+          to: RST
+        where:
+          ref: matrix_inner_bottom
+          shift: [21, -18]
+          rotate: 0
