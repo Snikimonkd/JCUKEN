@@ -11,6 +11,7 @@ units:
   py: ky + 2
   # circles
   top_radius: 160
+  right_radius: 30
   # MCU size
   mcu_width: 18
   mcu_height: 34
@@ -78,11 +79,11 @@ points:
       anchor:
         - ref: matrix_inner_top
           shift: [0.5px,0.5py]
-    bot_left:
+    right_top:
       anchor:
-        - ref: matrix_outer_bottom
-          shift: [-0.5px,-0.5py]
-    bot_right:
+        - ref: matrix_inner_home
+          shift: [0.5px+mcu_width+2,0.5py-mcu_height-2]
+    right_bot:
       anchor:
         - ref: thumbfan_home_thumb
           shift: [0.5px,-0.5py]
@@ -117,6 +118,14 @@ outlines:
         orient: top_left
         shift: [-152,0]
 
+  circle_right:
+    - what: circle
+      radius: right_radius
+      where: right_top
+      adjust:
+        shift: [-right_radius, 0]
+
+
   body_stairs:
     - what: polygon
       operation: stack
@@ -131,10 +140,6 @@ outlines:
           shift: [0.5px+mcu_width+2,0.5py]
         - ref: matrix_inner_home
           shift: [0.5px+mcu_width+2,0.5py-mcu_height-2]
-        - ref: thumbfan_home_thumb
-          shift: [0.5px,-0.5py]
-        - ref: thumbfan_home_thumb
-          shift: [-0.5px,-0.5py]
         - ref: thumbfan_near_thumb
           shift: [0.5px-1,-0.5py]
         - ref: thumbfan_near_thumb
@@ -160,19 +165,60 @@ outlines:
         - ref: matrix_outer_bottom
           shift: [-0.5px,-0.5py]
 
+
+  right_part_extended:
+    - what: polygon
+      operation: stack
+      points:
+        - ref: matrix_inner_home
+          shift: [0.5px+mcu_width+2,0.5py]
+        - ref: matrix_inner_home
+          shift: [0.5px+mcu_width+2,0.5py-mcu_height-2]
+        - ref: thumbfan_home_thumb
+          shift: [0.5px+20,-0.5py]
+        - ref: thumbfan_home_thumb
+          shift: [-0.5px,-0.5py]
+        - ref: thumbfan_near_thumb
+          shift: [0.5px-1,-0.5py]
+        - ref: thumbfan_near_thumb
+          shift: [-0.5px,-0.5py]
+        - ref: thumbfan_near_thumb
+          shift: [-0.5px,0.5py+3]
+        - ref: matrix_index_bottom
+          shift: [-0.5px,-0.5py]
+        - ref: matrix_middle_bottom
+          shift: [0.5px-2,-0.5py]
+        - ref: matrix_middle_bottom
+          shift: [-0.5px+2,-0.5py]
+        - ref: matrix_ring_bottom
+          shift: [0.5px,-0.5py]
+        - ref: matrix_ring_bottom
+          shift: [-0.5px+2,-0.5py]
+
   dbg:
     - name: body_stairs
     - operation: stack
       name: circle_top
     - operation: stack
       name: keys
+    - operation: stack
+      name: circle_right
+
+  right_part:
+    - name: right_part_extended
+      fillet: 1
+    - operation: intersect
+      name: circle_right
+      fillet: 10
 
   body:
     - name: body_stairs
       fillet: 1
     - operation: intersect
       name: circle_top 
-      fillet: 2
+      fillet: 3
+    - operation: add
+      name: right_part
     - operation: stack
       name: keys 
 
@@ -183,18 +229,17 @@ pcbs:
         outline: body
     footprints:
       choc_hotswap:
-        what: choc
-        where: true
+        what: ceoloide/switch_choc_v1_v2
+        where: [/^matrix_.*/,/^thumbfan_.*/]
         params:
-          keycaps: true
-          reverse: true
+          reversible: true
           hotswap: true
           from: "{{column_net}}"
           to: "{{colrow}}"
 
       diode:
         what: diode
-        where: true
+        where: [/^matrix_.*/,/^thumbfan_.*/]
         params:
           from: "{{colrow}}"
           to: "{{row_net}}"
@@ -233,5 +278,5 @@ pcbs:
           to: RST
         where:
           ref: matrix_inner_bottom
-          shift: [21, -18]
-          rotate: 0
+          shift: [21, -22]
+          rotate: 90
