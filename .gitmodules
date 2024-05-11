@@ -1,3 +1,6 @@
 [submodule "ergogen/footprints/ceoloide"]
 	path = ergogen/footprints/ceoloide
 	url = git@github.com:ceoloide/ergogen-footprints.git
+[submodule "ver_2/ergogen/footprints/ceoloide"]
+	path = ver_2/ergogen/footprints/ceoloide
+	url = git@github.com:ceoloide/ergogen-footprints.git
