@@ -1,301 +1,466 @@
-meta:
-  engine: 4.1.0
-  version: 0.1
-  author: snikimonkd
-units:
-  # Proxy Spacing Variables
-  kx: u
-  ky: u
-  # Padding Variables
-  padding: 2
-  px: kx + padding
-  py: ky + padding
-  # circles
-  top_radius: 180
-  # thumb shift
-  thumb_x: 8
-  thumb_y: -26
-  # MCU size
-  mcu_width: 17
-  mcu_height: 33
-points:
-  zones:
-    matrix:
-      anchor:
-        shift: [50, -100]
-      key:
-        padding: 1ky
-        spread: 1kx
-      rows:
-        bot:
-          row_net: P4
-        home:
-          row_net: P3
-        top:
-          row_net: P2
-      columns:
-        outer:
-          key:
-            column_net: P20
-        pinky:
-          key:
-            column_net: P21
-            stagger: 3
-        ring:
-          key:
-            origin: [-12, -10]
-            stagger: 4
-        middle:
-          key:
-            column_net: P7
-            stagger: 4
-        index:
-          key:
-            column_net: P8
-            stagger: -4
-        inner:
-          key:
-            column_net: P9
-            stagger: -2
-    thumbfan:
-      anchor:
-        ref: matrix_index_bot
-        shift: [thumb_x, thumb_y]
-      columns:
-        near:
-          key:
-            column_net: P6
-            shift: [0, 0]
-        home:
-          key:
-            column_net: P7
-            shift: [4, -2]
-            splay: -18
-      rows:
-        thumb:
-          row_net: P5
-
-    top_left:
-      anchor:
-        ref: matrix_outer_top
-        shift: [-0.5px, 0.5py]
-    top_right:
-      anchor:
-        - ref: matrix_inner_top
-          shift: [0.5px,0.5py]
-    bot:
-      anchor:
-        aggregate:
-          parts:
-            - ref: thumbfan_home_thumb
-            - ref: thumbfan_near_thumb
-        orient: thumbfan_near_thumb
-
-  rotate: 0
-
-outlines:
-  keys:
-    - what: rectangle
-      where: [/^matrix_.*/,/^thumbfan.*/]
-      size: [kx-0.5,ky-0.5]
-      
-  mcu:
-    - what: rectangle
-      where: 
-        ref: matrix_inner_bot
-        shift: [0.5px+mcu_width/2, 0.5py]
-      size: [mcu_width,mcu_height]
-
-  circle_top:
-    - what: circle
-      radius: top_radius
-      where:
-        aggregate:
-          parts:
-            - ref: top_left
-            - ref: top_right
-        orient: top_left
-        shift: [-171,0]
-
-  body_stairs:
-    - what: polygon
-      points:
-        - ref: matrix_outer_top
-          shift: [-0.5px,0.5py+15]
-        - ref: matrix_inner_top
-          shift: [0.5px,0.5py+15]
-        - ref: matrix_inner_home
-          shift: [0.5px,0.5ky]
-        - ref: matrix_inner_home
-          shift: [0.5px+mcu_width+padding,0.5ky]
-        - ref: matrix_inner_home
-          shift: [0.5px+mcu_width+padding,0.5ky-mcu_height-padding-10]
-        - ref: thumbfan_home_thumb
-          shift: [0.5px+5,-0.5py]
-        #
-        - ref: bot
-          shift: [-0.5px+1.5, 0]
-        #
-        - ref: thumbfan_near_thumb
-          shift: [-0.5px,-0.5py]
-        - ref: thumbfan_near_thumb
-          shift: [-0.5px,-thumb_y-0.5py]
-        - ref: matrix_index_bot
-          shift: [-0.5px,-0.5py]
-        - ref: matrix_middle_bot
-          shift: [0.5px-padding,-0.5py]
-        - ref: matrix_middle_bot
-          shift: [-0.5px+padding,-0.5py]
-        - ref: matrix_ring_bot
-          shift: [0.5px,-0.5py]
-        - ref: matrix_ring_bot
-          shift: [-0.5px+padding,-0.5py]
-        - ref: matrix_pinky_bot
-          shift: [0.5px,-0.5py]
-        - ref: matrix_pinky_bot
-          shift: [-0.5px+padding,-0.5py]
-        - ref: matrix_outer_bot
-          shift: [0.5px,-0.5py]
-        - ref: matrix_outer_bot
-          shift: [-0.5px,-0.5py]
-
-  right_kek:
-    - what: polygon
-      points:
-        - ref: matrix_inner_home
-          shift: [0.5px+mcu_width+padding,0.5ky-mcu_height-padding]
-        - ref: thumbfan_home_thumb
-          shift: [0.5px,-0.5py-10]
-        - ref: thumbfan_home_thumb
-          shift: [50,0]
-
-  body:
-    - name: body_stairs
-      fillet: 1
-    - operation: intersect
-      name: circle_top 
-      fillet: 3
-    - operation: subtract
-      name: right_kek
-      fillet: 20
-    - operation: stack
-      name: keys
-      fillet: 1
-
-  dbg_body:
-    - name: body_stairs
-      fillet: 1
-    - operation: intersect
-      name: circle_top 
-      fillet: 3
-    - operation: stack
-      name: right_kek
-    - operation: stack
-      name: keys
-    - operation: stack
-      name: mcu
-
-pcbs:
-  jcuken_v2:
-    template: kicad8 # Required, since footprints are KiCad 8 only
-    outlines:
-      main:
-        outline: body
-    footprints:
-
-      switch:
-        what: ceoloide/switch_gateron_ks27_ks33
-        where: [/^matrix_.*/,/^thumbfan_.*/]
-        params:
-          reversible: true
-          hotswap: true
-          solder: false
-          from: "{{column_net}}"
-          to: "{{colrow}}"
-
-      mcu:
-        what: ceoloide/mcu_nice_nano
-        params:
-          include_traces: true
-          show_instructions: false
-          show_silk_labels: true
-          show_via_labels: true
-          use_rectangular_jumpers: true
-        where:
-          ref: matrix_inner_bot
-          shift: [0.5px+mcu_width/2, 0.5py]
-
-      diode:
-        what: diode
-        where: [/^matrix_.*/,/^thumbfan_.*/]
-        params:
-          from: "{{colrow}}"
-          to: "{{row_net}}"
-        adjust:
-          shift: [0, 9]
-
-      trrs:
-        what: ceoloide/trrs_pj320a
-        where:
-          ref: matrix_inner_bot
-          shift: [25, -10]
-          rotate: -90
-        params:
-          SL: VCC
-          R2: GND
-          TP: P0
-          reversible: true
-          symmetric: true
-
-      reset:
-        what: ceoloide/reset_switch_tht_top
-        params:
-          from: GND
-          to: RST
-        where:
-          ref: matrix_inner_bot
-          shift: [19, -16]
-
-      bot_right_hole:
-        what: ceoloide/mounting_hole_plated
+meta:
+  engine: 4.1.0
+  version: 0.1
+  author: snikimonkd
+units:
+  # Proxy Spacing Variables
+  kx: u
+  ky: u
+  # Padding Variables
+  padding: 4
+  # will be devided by 2
+  outer_padding: 8
+  inner_padding: 8
+  px: kx + padding
+  py: ky + padding
+  opx: px+outer_padding
+  opy: py+outer_padding
+  ipx: px-inner_padding
+  ipy: py-inner_padding
+  # circles
+  top_radius: 180
+  outer_top_radius: top_radius+outer_padding/2
+  inner_top_radius: top_radius-inner_padding/2
+  # thumb shift
+  thumb_x: 8
+  thumb_y: -26
+  # MCU size
+  mcu_width: 17
+  mcu_height: 33
+points:
+  zones:
+    matrix:
+      anchor:
+        shift: [50, -100]
+      key:
+        padding: 1ky
+        spread: 1kx
+      rows:
+        bot:
+          row_net: P4 #21
+        home:
+          row_net: P3 #20
+        top:
+          row_net: P2 #19
+      columns:
+        inner:
+          key:
+            column_net: P9 #18
+            stagger: -2
+        index:
+          key:
+            column_net: P8 #15
+            stagger: -4
+        middle:
+          key:
+            column_net: P7 #14
+            stagger: 4
+        ring:
+          key:
+            column_net: P6 #16
+            origin: [-12, -10]
+            stagger: 4
+        pinky:
+          key:
+            column_net: P21 #10
+            stagger: 3
+        outer:
+          key:
+            column_net: P20 #9
+    thumbfan:
+      anchor:
+        ref: matrix_index_bot
+        shift: [thumb_x, thumb_y]
+      columns:
+        near:
+          key:
+            column_net: P8 #8
+            shift: [0, 0]
+        home:
+          key:
+            column_net: P9 #7
+            shift: [4, -2]
+            splay: -18
+      rows:
+        thumb:
+          row_net: P5
+
+    top_left:
+      anchor:
+        ref: matrix_outer_top
+        shift: [-0.5px, 0.5py]
+    top_right:
+      anchor:
+        - ref: matrix_inner_top
+          shift: [0.5px,0.5py]
+    bot:
+      anchor:
+        aggregate:
+          parts:
+            - ref: thumbfan_home_thumb
+            - ref: thumbfan_near_thumb
+        orient: thumbfan_near_thumb
+
+  rotate: 0
+
+outlines:
+  keys:
+    - what: rectangle
+      where: [/^matrix_.*/,/^thumbfan.*/]
+      size: [kx-0.5,ky-0.5]
+
+  mcu:
+    - what: rectangle
+      where:
+        ref: matrix_inner_bot
+        shift: [0.5px+mcu_width/2, 0.5py]
+      size: [mcu_width,mcu_height]
+
+  circle_top:
+    - what: circle
+      radius: top_radius
+      where:
+        aggregate:
+          parts:
+            - ref: top_left
+            - ref: top_right
+        orient: top_left
+        shift: [-171,0]
+
+  outer_circle_top:
+    - what: circle
+      radius: outer_top_radius
+      where:
+        aggregate:
+          parts:
+            - ref: top_left
+            - ref: top_right
+        orient: top_left
+        shift: [-171,0]
+
+  inner_circle_top:
+    - what: circle
+      radius: inner_top_radius
+      where:
+        aggregate:
+          parts:
+            - ref: top_left
+            - ref: top_right
+        orient: top_left
+        shift: [-171,0]
+
+  body_stairs:
+    - what: polygon
+      points:
+        - ref: matrix_outer_top
+          shift: [-0.5px,0.5py+15]
+        - ref: matrix_inner_top
+          shift: [0.5px,0.5py+15]
+        - ref: matrix_inner_home
+          shift: [0.5px,0.5ky]
+        - ref: matrix_inner_home
+          shift: [0.5px+mcu_width+padding/2,0.5ky]
+        - ref: matrix_inner_home
+          shift: [0.5px+mcu_width+padding/2,0.5ky-mcu_height-padding-10]
+        - ref: thumbfan_home_thumb
+          shift: [0.5px+5,-0.5py]
+        #
+        - ref: bot
+          shift: [-0.5px+1.5, 0]
+        #
+        - ref: thumbfan_near_thumb
+          shift: [-0.5px,-0.5py]
+        - ref: thumbfan_near_thumb
+          shift: [-0.5px,-thumb_y-0.5py]
+        - ref: matrix_index_bot
+          shift: [-0.5px,-0.5py]
+        - ref: matrix_middle_bot
+          shift: [kx-0.5px,-0.5py]
+        - ref: matrix_middle_bot
+          shift: [-kx+0.5px,-0.5py]
+        - ref: matrix_ring_bot
+          shift: [0.5px,-0.5py]
+        - ref: matrix_ring_bot
+          shift: [-kx+0.5px,-0.5py]
+        - ref: matrix_pinky_bot
+          shift: [0.5px,-0.5py]
+        - ref: matrix_pinky_bot
+          shift: [-kx+0.5px,-0.5py]
+        - ref: matrix_outer_bot
+          shift: [0.5px,-0.5py]
+        - ref: matrix_outer_bot
+          shift: [-0.5px,-0.5py]
+
+  outer_body_stairs:
+    - what: polygon
+      points:
+        - ref: matrix_outer_top
+          shift: [-0.5opx,0.5opy+15]
+        - ref: matrix_inner_top
+          shift: [0.5opx,0.5opy+15]
+        - ref: matrix_inner_home
+          shift: [0.5opx,0.5ky]
+        - ref: matrix_inner_home
+          shift: [0.5opx+mcu_width+padding/2,0.5ky]
+        - ref: matrix_inner_home
+          shift: [0.5opx+mcu_width+padding/2,0.5ky-mcu_height-outer_padding-10]
+        - ref: thumbfan_home_thumb
+          shift: [0.5opx+5,-0.5opy]
+        #
+        - ref: bot
+          shift: [-0.5opx+1.5, 0]
+        #
+        - ref: thumbfan_near_thumb
+          shift: [-0.5opx,-0.5opy]
+        - ref: thumbfan_near_thumb
+          shift: [-0.5opx,-thumb_y-0.5opy]
+        - ref: matrix_index_bot
+          shift: [-0.5opx,-0.5opy]
+        - ref: matrix_middle_bot
+          shift: [kx-0.5opx,-0.5opy]
+        - ref: matrix_middle_bot
+          shift: [-kx+0.5opx,-0.5opy]
+        - ref: matrix_ring_bot
+          shift: [0.5opx,-0.5opy]
+        - ref: matrix_ring_bot
+          shift: [-kx+0.5opx,-0.5opy]
+        - ref: matrix_pinky_bot
+          shift: [0.5opx,-0.5opy]
+        - ref: matrix_pinky_bot
+          shift: [-kx+0.5opx,-0.5opy]
+        - ref: matrix_outer_bot
+          shift: [0.5opx,-0.5opy]
+        - ref: matrix_outer_bot
+          shift: [-0.5opx,-0.5opy]
+
+  inner_body_stairs:
+    - what: polygon
+      points:
+        - ref: matrix_outer_top
+          shift: [-0.5ipx,0.5ipy+15]
+        - ref: matrix_inner_top
+          shift: [0.5ipx,0.5ipy+15]
+        - ref: matrix_inner_home
+          shift: [0.5ipx,0.5ky]
+        - ref: matrix_inner_home
+          shift: [0.5ipx+mcu_width+padding/2,0.5ky]
+        - ref: matrix_inner_home
+          shift: [0.5ipx+mcu_width+padding/2,0.5ky-mcu_height-inner_padding-10]
+        - ref: thumbfan_home_thumb
+          shift: [0.5ipx+5,-0.5ipy]
+        #
+        - ref: bot
+          shift: [-0.5ipx+1.5, 0]
+        #
+        - ref: thumbfan_near_thumb
+          shift: [-0.5ipx,-0.5ipy]
+        - ref: thumbfan_near_thumb
+          shift: [-0.5ipx,-thumb_y-0.5ipy]
+        - ref: matrix_index_bot
+          shift: [-0.5ipx,-0.5ipy]
+        - ref: matrix_middle_bot
+          shift: [kx-0.5ipx,-0.5ipy]
+        - ref: matrix_middle_bot
+          shift: [-kx+0.5ipx,-0.5ipy]
+        - ref: matrix_ring_bot
+          shift: [0.5ipx,-0.5ipy]
+        - ref: matrix_ring_bot
+          shift: [-kx+0.5ipx,-0.5ipy]
+        - ref: matrix_pinky_bot
+          shift: [0.5ipx,-0.5ipy]
+        - ref: matrix_pinky_bot
+          shift: [-kx+0.5ipx,-0.5ipy]
+        - ref: matrix_outer_bot
+          shift: [0.5ipx,-0.5ipy]
+        - ref: matrix_outer_bot
+          shift: [-0.5ipx,-0.5ipy]
+
+  triangle:
+    - what: polygon
+      points:
+        - ref: matrix_inner_home
+          shift: [0.5px+mcu_width+padding,0.5ky-mcu_height-padding]
+        - ref: thumbfan_home_thumb
+          shift: [0.5px,-0.5py-10]
+        - ref: thumbfan_home_thumb
+          shift: [50,0]
+
+  outer_triangle:
+    - what: polygon
+      points:
+        - ref: matrix_inner_home
+          shift: [0.5opx+mcu_width+padding,0.5ky-mcu_height-padding]
+        - ref: thumbfan_home_thumb
+          shift: [0.5opx,-0.5opy-10]
+        - ref: thumbfan_home_thumb
+          shift: [50,0]
+
+  inner_triangle:
+    - what: polygon
+      points:
+        - ref: matrix_inner_home
+          shift: [0.5ipx+mcu_width+padding,0.5ky-mcu_height-padding]
+        - ref: thumbfan_home_thumb
+          shift: [0.5ipx,-0.5ipy-10]
+        - ref: thumbfan_home_thumb
+          shift: [50,0]
+
+  outer_body:
+    - name: outer_body_stairs
+      fillet: 1.49
+    - operation: intersect
+      name: outer_circle_top
+      fillet: 3+5
+    - operation: subtract
+      name: outer_triangle
+      fillet: 2
+
+  inner_body:
+    - name: inner_body_stairs
+      fillet: 1
+    - operation: intersect
+      name: inner_circle_top
+      fillet: 3
+    - operation: subtract
+      name: inner_triangle
+      fillet: 2
+
+  body:
+    - name: body_stairs
+      fillet: 1
+    - operation: intersect
+      name: circle_top
+      fillet: 3
+    - operation: subtract
+      name: triangle
+      fillet: 2
+
+  combo:
+    - name: outer_body
+    - operation: stack
+      name: body
+    - operation: stack
+      name: inner_body
+
+  dbg_body:
+    - name: body_stairs
+    - operation: stack
+      name: circle_top
+    - operation: stack
+      name: outer_circle_top
+    - operation: stack
+      name: triangle
+    - operation: stack
+      name: keys
+    - operation: stack
+      name: mcu
+    - operation: stack
+      name: outer_body_stairs
+    - operation: stack
+      name: outer_triangle
+
+pcbs:
+  jcuken_v2:
+    template: kicad8 # Required, since footprints are KiCad 8 only
+    outlines:
+      main:
+        outline: body
+    footprints:
+
+      switchs:
+        what: ceoloide/switch_gateron_ks27_ks33
+        where: [/^matrix_.*/,/^thumbfan_.*/]
+        adjust:
+          rotate: 180
+        params:
+          reversible: true
+          include_keycap: true
+          hotswap: false
+          solder: true
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+
+      mcu:
+        what: ceoloide/mcu_nice_nano
+        params:
+          reversible: true
+          reverse_mount: false
+        where:
+          ref: matrix_inner_bot
+          shift: [0.5px+mcu_width/2, 0.5py]
+
+      diodes:
+        what: ceoloide/diode_tht_sod123
+        where: [/^matrix_.*/,/^thumbfan_.*/]
+        params:
+          reversible: true
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [-4, 9]
+
+      trrs:
+        what: ceoloide/trrs_pj320a
+        where:
+          ref: matrix_inner_bot
+          shift: [25, -10]
+          rotate: -90
+        params:
+          SL: VCC
+          R2: GND
+          TP: P0
+          reversible: true
+          symmetric: true
+
+      reset:
+        what: ceoloide/reset_switch_tht_top
+        params:
+          from: GND
+          to: RST
+        where:
+          ref: matrix_inner_bot
+          shift: [19, -16]
+
+      bot_right_hole:
+        what: ceoloide/mounting_hole_plated
         params:
           drill: 3.2
-        where:
-          aggregate:
-            parts:
-              - ref: matrix_middle_home
-              - ref: matrix_index_bot
-          shift: [0, 0.25px]
-
-      top_right_hole:
-        what: ceoloide/mounting_hole_plated
+        where:
+          aggregate:
+            parts:
+              - ref: matrix_middle_bot
+              - ref: matrix_index_bot
+          shift: [0, -2]
+
+      top_right_hole:
+        what: ceoloide/mounting_hole_plated
         params:
           drill: 3.2
-        where:
-          aggregate:
-            parts:
-              - ref: matrix_middle_home
-              - ref: matrix_index_top
-          shift: [0, 0.25px]
-
-      bot_left_hole:
-        what: ceoloide/mounting_hole_plated
+        where:
+          aggregate:
+            parts:
+              - ref: matrix_middle_top
+              - ref: matrix_index_top
+          shift: [0, -2]
+
+      bot_left_hole:
+        what: ceoloide/mounting_hole_plated
         params:
           drill: 3.2
-        where:
-          aggregate:
-            parts:
-              - ref: matrix_ring_home
-              - ref: matrix_pinky_bot
-          shift: [0, 0.25px]
-
-      top_left_hole:
-        what: ceoloide/mounting_hole_plated
+        where:
+          aggregate:
+            parts:
+              - ref: matrix_ring_bot
+              - ref: matrix_pinky_bot
+          shift: [0, -2]
+
+      top_left_hole:
+        what: ceoloide/mounting_hole_plated
         params:
           drill: 3.2
-        where:
-          aggregate:
-            parts:
-              - ref: matrix_ring_home
-              - ref: matrix_pinky_top
-          shift: [0, 0.25px]
+        where:
+          aggregate:
+            parts:
+              - ref: matrix_ring_top
+              - ref: matrix_pinky_top
+          shift: [0, -2]
